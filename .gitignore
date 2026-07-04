@@ -1,0 +1,10 @@
+topsbot_ws/build/
+topsbot_ws/install/
+topsbot_ws/log/
+
+topsbot_sysroot/
+
+topsbot_sysroot.tar.gz
+
+*.swp
+*~
