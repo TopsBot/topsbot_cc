@@ -1,0 +1,25 @@
+repositories:
+  topsbot_hand_det_mediapipe:
+    type: git
+    url: https://github.com/TopsBot/topsbot_hand_det_mediapipe.git
+    version: main
+  topsbot_msgs:
+    type: git
+    url: https://github.com/TopsBot/topsbot_msgs.git
+    version: main
+  topsbot_usb_cam:
+    type: git
+    url: https://github.com/TopsBot/topsbot_usb_cam.git
+    version: main
+  topsbot_yolo_det:
+    type: git
+    url: https://github.com/TopsBot/topsbot_yolo_det.git
+    version: main
+  topsbot_cv:
+    type: git
+    url: https://github.com/TopsBot/topsbot_cv.git
+    version: main
+  topsbot_webviz:
+    type: git
+    url: https://github.com/TopsBot/topsbot_webviz.git
+    version: main
