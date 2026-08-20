@@ -10,7 +10,7 @@
 
 set -euo pipefail
 
-TOPSBOT_SYSROOT_URL="https://bj25486.apps.aliyunfile.com/disk/s/rKEhSHhcjZ5?domainId=bj25486"
+TOPSBOT_SYSROOT_URL="https://bj25486.apps.aliyunfile.com/disk/s/WsHj8SxhiuP?domainId=bj25486"
 
 # Color definitions
 RED='\033[0;31m'

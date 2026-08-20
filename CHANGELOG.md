@@ -1,5 +1,11 @@
 # Changelog
 
+## release-0.3.0 (2026-08-20)
+
+- Switch GitHub sync to release2github demo scripts (`alpine-fu:3.20`, append-only push, no `push -f`).
+- Update sysroot to 0.4.0.
+- Update `topsbot_ws/ros2_release.repos`.
+
 ## release-0.2.0 (2026-07-09)
 
 - Add release2github export gates (`.gitlab-ci.yml`, `release.yaml`, `ci/release-sync.sh`).
