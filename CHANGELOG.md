@@ -1,5 +1,9 @@
 # Changelog
 
+## release-0.3.1 (2026-08-21)
+
+- Update sysroot download link.
+
 ## release-0.3.0 (2026-08-20)
 
 - Switch GitHub sync to release2github demo scripts (`alpine-fu:3.20`, append-only push, no `push -f`).
