@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>topsbot_ros</name>
+  <version>0.10.0</version>
+  <description>TOPSBOT ros meta package (one-click install, excludes topsbot_base)</description>
+  <maintainer email="topsbot@topsfuture.com">topsbot</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>ros_workspace</exec_depend>
+
+  <!-- AI 算法 -->
+  <exec_depend>topsbot_ai_infer</exec_depend>
+  <exec_depend>topsbot_mobilenet_cls</exec_depend>  <!-- topsbot_mobilenetv2 -->
+  <exec_depend>topsbot_yolo</exec_depend>
+  <exec_depend>topsbot_segformer</exec_depend>
+  <exec_depend>topsbot_cpu_mediapipe_infer</exec_depend>
+  <exec_depend>topsbot_gesture_det</exec_depend>  <!-- topsbot_gesture -->
+  <exec_depend>topsbot_whisper_asr</exec_depend>  <!-- topsbot_whisper -->
+
+  <!-- 中间件 & 三方库 -->
+  <exec_depend>tb_cls_msgs</exec_depend>  <!-- topsbot_msgs -->
+  <exec_depend>tb_det_msgs</exec_depend>  <!-- topsbot_msgs -->
+  <exec_depend>tb_img_msgs</exec_depend>  <!-- topsbot_msgs -->
+  <exec_depend>tb_seg_msgs</exec_depend>  <!-- topsbot_msgs -->
+  <exec_depend>fastrtps</exec_depend>  <!-- topsbot_fastdds -->
+  <exec_depend>topsbot_cv</exec_depend>
+  <exec_depend>python3-mediapipe</exec_depend>  <!-- python3-mediapipe-topsbot -->
+
+  <!-- 工具 -->
+  <exec_depend>topsbot_webviz</exec_depend>
+
+  <!-- 外设驱动 -->
+  <exec_depend>yesense_interface</exec_depend>  <!-- Yesense_ROS2 -->
+  <exec_depend>yesense_std_ros2</exec_depend>  <!-- Yesense_ROS2 -->
+  <exec_depend>topsbot_usb_cam</exec_depend>
+  <exec_depend>orbbec_camera</exec_depend>  <!-- OrbbecSDK_ROS2_riscv64 -->
+  <exec_depend>orbbec_camera_msgs</exec_depend>  <!-- OrbbecSDK_ROS2_riscv64 -->
+  <exec_depend>orbbec_description</exec_depend>  <!-- OrbbecSDK_ROS2_riscv64 -->
+  <exec_depend>berxel_camera_ros2</exec_depend>  <!-- BerxelSDK_ROS2_riscv64 -->
+  <exec_depend>tanwaylidar_view</exec_depend>  <!-- tanwaylidar_view_ros2_rsicv -->
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,37 @@
+{
+  "id": 10,
+  "name": "mes20",
+  "board": "mes20",
+  "product": "default",
+  "platform": "MES20",
+  "description": "TopsBot MES20 platform (riscv64)",
+  "repos": "configs/ros2_internal_publish.repos",
+  "default_variant": "noble",
+  "sysroot": {
+    "packages": "package.list"
+  },
+  "env": {
+    "TARGET_ARCH": "riscv64",
+    "TARGET_TRIPLE": "riscv64-linux-gnu"
+  },
+  "variants": {
+    "jammy": {
+      "id": 10,
+      "distro": "jammy",
+      "image": "topsbot_riscv64_cross_build:jammy",
+      "remote_image": "harbor.intchains.in:8999/topsbot/topsbot_riscv64_cross_build:jammy",
+      "sysroot": {
+        "url": "http://owncloud.intchains.in:9000/s/KUzCqJihjNKmZoS/download"
+      }
+    },
+    "noble": {
+      "id": 11,
+      "distro": "noble",
+      "image": "topsbot_riscv64_cross_build:noble",
+      "remote_image": "harbor.intchains.in:8999/topsbot/topsbot_riscv64_cross_build:noble",
+      "sysroot": {
+        "url": "http://owncloud.intchains.in:9000/s/XfrlmFPLwx2oMrc/download"
+      }
+    }
+  }
+}

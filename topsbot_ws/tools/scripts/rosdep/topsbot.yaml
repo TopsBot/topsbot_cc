@@ -1,0 +1,92 @@
+# Project-local rosdep rules for `tb package` (bloom debianization).
+#
+# Keys not present in rosdistro resolve here to the tbros debs published in
+# topsbot-apt.topsfuture.com.cn. This file is referenced from the rosdep
+# sources list that tools/scripts/package.sh generates (10-topsbot.list, which takes
+# precedence over 20-default.list).
+berxel_camera_ros2:
+  ubuntu: [tbros-humble-berxel-camera-ros2]
+fastrtps:
+  # topsbot_fastdds publishes the patched fastrtps deb; this key overrides
+  # the stock rosdistro fastrtps mapping (10-topsbot.list takes precedence).
+  ubuntu: [tbros-humble-fastrtps]
+orbbec_camera:
+  ubuntu: [tbros-humble-orbbec-camera]
+orbbec_camera_msgs:
+  ubuntu: [tbros-humble-orbbec-camera-msgs]
+orbbec_description:
+  ubuntu: [tbros-humble-orbbec-description]
+tanwaylidar_view:
+  ubuntu: [tbros-humble-tanwaylidar-view]
+tb_cls_msgs:
+  ubuntu: [tbros-humble-tb-cls-msgs]
+tb_det_msgs:
+  ubuntu: [tbros-humble-tb-det-msgs]
+tb_img_msgs:
+  ubuntu: [tbros-humble-tb-img-msgs]
+tb_seg_msgs:
+  ubuntu: [tbros-humble-tb-seg-msgs]
+topsbot_ai_infer:
+  ubuntu: [tbros-humble-topsbot-ai-infer]
+topsbot_base:
+  ubuntu: [tbros-humble-topsbot-base]
+topsbot_cpu_mediapipe_infer:
+  ubuntu: [tbros-humble-topsbot-cpu-mediapipe-infer]
+topsbot_cv:
+  ubuntu: [tbros-humble-topsbot-cv]
+topsbot_gesture_det:
+  ubuntu: [tbros-humble-topsbot-gesture-det]
+topsbot_mobilenet_cls:
+  ubuntu: [tbros-humble-topsbot-mobilenet-cls]
+topsbot_ros:
+  ubuntu: [tbros-humble-topsbot-ros]
+topsbot_segformer:
+  ubuntu: [tbros-humble-topsbot-segformer]
+topsbot_usb_cam:
+  ubuntu: [tbros-humble-topsbot-usb-cam]
+topsbot_webviz:
+  ubuntu: [tbros-humble-topsbot-webviz]
+topsbot_whisper_asr:
+  ubuntu: [tbros-humble-topsbot-whisper-asr]
+topsbot_yolo:
+  ubuntu: [tbros-humble-topsbot-yolo]
+yesense_interface:
+  ubuntu: [tbros-humble-yesense-interface]
+yesense_std_ros2:
+  ubuntu: [tbros-humble-yesense-std-ros2]
+ros_workspace:
+  ubuntu: [tbros-humble-ros-workspace]
+taco-sdk:
+  ubuntu: [taco-sdk]
+libdmabufheap:
+  ubuntu: [libdmabufheap]
+libtasys:
+  ubuntu: [libtasys]
+libtacv:
+  ubuntu: [libtacv]
+libtaruntime:
+  ubuntu: [libtaruntime]
+libdec24:
+  ubuntu: [libdec24]
+libenc24:
+  ubuntu: [libenc24]
+libviplite-9200o:
+  ubuntu: [libviplite-9200o]
+ta-llmruntime:
+  ubuntu: [ta-llmruntime]
+libprotobuf-dev:
+  ubuntu: [libprotobuf-dev]
+libcxx-serial-dev:
+  ubuntu: [libcxx-serial-dev]
+libwebsockets16:
+  ubuntu:
+    jammy: [libwebsockets16]
+    noble: [libwebsockets19t64]   # noble renamed it (64-bit time_t transition)
+protobuf-compiler:
+  ubuntu: [protobuf-compiler]
+python3-mediapipe:
+  ubuntu:
+    jammy: [python3-mediapipe]
+    noble: [python3-mediapipe-topsbot]
+v4l-utils:
+  ubuntu: [v4l-utils]

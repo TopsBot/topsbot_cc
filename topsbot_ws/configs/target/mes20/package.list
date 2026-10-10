@@ -1,0 +1,3 @@
+# Extra packages that must exist inside the sysroot (one apt package name per
+# line, '#' comments allowed). Referenced by mes20.json: sysroot.packages.
+# Any command that needs the sysroot ensures these are present (dpkg status).

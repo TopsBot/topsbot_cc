@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>topsbot_base</name>
+  <version>0.10.0</version>
+  <description>TOPSBOT ros base (ament package topsbot_base)</description>
+  <maintainer email="topsbot@topsfuture.com">topsbot</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rcl_interfaces</depend>
+  <depend>rcl</depend>
+  <depend>rclcpp</depend>
+  <depend>ros_base</depend>
+
+  <!-- release-level additions of the published tbros-humble-topsbot-base deb
+       (ros_workspace resolves to tbros-humble-ros-workspace via
+       tools/scripts/rosdep/topsbot.yaml) -->
+  <exec_depend>taco-sdk</exec_depend>
+  <exec_depend>ros_workspace</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,11 +1,24 @@
 topsbot_ws/build/
 topsbot_ws/install/
 topsbot_ws/log/
-topsbot_ws/src/
+# vcs-imported packages stay untracked; meta packages live in tools/packages.
+topsbot_ws/src/*
+topsbot_ws/debsrc/
+# topsbot_ros_base checkout — vcs-managed via the ../tools/sysroot key in
+# ros2.repos; stays untracked like the src/* checkouts
+topsbot_ws/tools/sysroot/
 
-topsbot_sysroot/
-
-topsbot_sysroot.tar.gz
+# extracted sysroots (sysroot/{jammy,noble}) + download artifacts
+# (sysroot/archives/) stay out of git
+/sysroot/
 
 *.swp
 *~
+# dot-directories at repo root only (e.g. .pi/)
+/.*/
+
+__pycache__/
+*.pyc
+
+# local target overrides (compose-style merge)
+topsbot_ws/configs/target/**/*.override.json

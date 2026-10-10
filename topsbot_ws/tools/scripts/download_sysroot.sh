@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 #
-# 下载并解压 topsbot_sysroot（支持 topsbot_sysroot.tar.gz 或 topsbot_sysroot_*.tar.gz 等）。
+# 下载并解压 sysroot。地址和目录由 board JSON 经 tb 注入，本脚本不写死默认值。
 #
 # 用法:
-#   bash topsbot_ws/tools/download_sysroot.sh              # 缺 tgz 则下载，缺 sysroot 则解压
-#   bash topsbot_ws/tools/download_sysroot.sh --force      # 强制重新下载并解压
-#   bash topsbot_ws/tools/download_sysroot.sh --extract-only   # 仅解压已有 tgz
-#   bash topsbot_ws/tools/download_sysroot.sh --debug
+#   bash topsbot_ws/tools/scripts/download_sysroot.sh              # 缺 tgz 则下载，缺 sysroot 则解压
+#   bash topsbot_ws/tools/scripts/download_sysroot.sh --force      # 强制重新下载并解压
+#   bash topsbot_ws/tools/scripts/download_sysroot.sh --extract-only   # 仅解压已有 tgz
+#   bash topsbot_ws/tools/scripts/download_sysroot.sh --debug
+#
+# 环境变量: TOPSBOT_SYSROOT_URL / DIR / FILE / VARIANT（tb update sysroot 注入）
+#   DIR 必填；URL 仅在需要下载时必填。
 
 set -euo pipefail
-
-TOPSBOT_SYSROOT_URL="https://bj25486.apps.aliyunfile.com/disk/s/BQVvNQgFSBb?domainId=bj25486"
 
 # Color definitions
 RED='\033[0;31m'
@@ -20,14 +21,30 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CC_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-DEFAULT_ARCHIVE="${CC_ROOT}/topsbot_sysroot.tar.gz"
+CC_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+
+TOPSBOT_SYSROOT_URL="${TOPSBOT_SYSROOT_URL:-${TB_SYSROOT_URL:-}}"
+VARIANT="${TOPSBOT_SYSROOT_VARIANT:-${TB_SYSROOT_VARIANT:-}}"
+FILE_PAT="${TOPSBOT_SYSROOT_FILE:-${TB_SYSROOT_FILE:-}}"
+_RAW_DIR="${TOPSBOT_SYSROOT_DIR:-${TB_SYSROOT_DIR:-}}"
+if [[ -z "${_RAW_DIR}" ]]; then
+    echo "[ERROR] TOPSBOT_SYSROOT_DIR is required (set sysroot.dir in the board JSON)" >&2
+    exit 1
+fi
+if [[ "${_RAW_DIR}" != /* ]]; then
+    SYSROOT="${CC_ROOT}/${_RAW_DIR}"
+else
+    SYSROOT="${_RAW_DIR}"
+fi
+# Tarball under sysroot/archives/, named after the extract dir's basename
+# (从 JSON dir 推出，不写死 jammy/noble 名）。
+DEFAULT_ARCHIVE="${CC_ROOT}/sysroot/archives/$(basename "${SYSROOT}").tar.gz"
 ARCHIVE=""
-SYSROOT="${CC_ROOT}/topsbot_sysroot"
 
 DEBUG="false"
 FORCE=false
 EXTRACT_ONLY=false
+DOWNLOAD_ONLY=false
 
 # Log functions
 log_info() {
@@ -53,81 +70,68 @@ log_debug() {
 }
 
 usage() {
-    echo "Usage: $0 [--force] [--extract-only] [--debug]"
-    echo "  下载 topsbot_sysroot*.tar.gz 并解压到 ${SYSROOT}/"
-    echo "  本地 tgz 优先 topsbot_sysroot.tar.gz，否则用 topsbot_sysroot_<version>.tar.gz"
-    echo "  --force         删除已有 tgz 和 sysroot 后重新下载解压"
-    echo "  --extract-only  仅解压本地 tgz，不下载"
+    echo "Usage: $0 [--force] [--extract-only] [--download-only] [--debug]"
+    echo "  download the sysroot tarball and extract it to ${SYSROOT}/"
+    echo "  env: TOPSBOT_SYSROOT_URL / DIR / FILE / VARIANT"
+    echo "  --force         remove the existing tarball and sysroot, then re-download and extract"
+    echo "  --extract-only  extract the local tarball only, no download"
+    echo "  --download-only download the tarball only, do not extract"
     exit 1
 }
 
-# 解析本地 sysroot 压缩包：新包名优先，否则取版本号最高的备份包
 resolve_sysroot_archive() {
     if [[ -f "${DEFAULT_ARCHIVE}" ]]; then
         ARCHIVE="${DEFAULT_ARCHIVE}"
         return 0
     fi
-    shopt -s nullglob
-    local candidates=("${CC_ROOT}"/topsbot_sysroot_*.tar.gz)
-    shopt -u nullglob
-    if [[ ${#candidates[@]} -eq 0 ]]; then
-        ARCHIVE=""
-        return 1
-    fi
-    ARCHIVE="$(printf '%s\n' "${candidates[@]}" | sort -V | tail -1)"
-    return 0
+    ARCHIVE=""
+    return 1
 }
 
 remove_sysroot_archives() {
     rm -f "${DEFAULT_ARCHIVE}"
-    shopt -s nullglob
-    rm -f "${CC_ROOT}"/topsbot_sysroot_*.tar.gz
-    shopt -u nullglob
 }
 
 sysroot_ready() {
-    [[ -d "${SYSROOT}/usr/bin" ]] && \
-    { [[ -d "${SYSROOT}/opt/tbros" ]] || [[ -d "${SYSROOT}/opt/ros" ]]; }
+    [[ -d "${SYSROOT}/usr/bin" ]] &&
+        { [[ -d "${SYSROOT}/opt/tbros" ]] || [[ -d "${SYSROOT}/opt/ros" ]]; }
 }
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --debug) DEBUG="true" ;;
-        --force) FORCE=true ;;
-        --extract-only) EXTRACT_ONLY=true ;;
-        -h|--help) usage ;;
-        *)
-            log_error "未知参数: $1"
-            usage
-            ;;
+    --debug) DEBUG="true" ;;
+    --force) FORCE=true ;;
+    --extract-only) EXTRACT_ONLY=true ;;
+    --download-only) DOWNLOAD_ONLY=true ;;
+    -h | --help) usage ;;
+    *)
+        log_error "unknown argument: $1"
+        usage
+        ;;
     esac
     shift
 done
 
 res=$(which wget)
-if [ $? != 0 ];
-then
+if [ $? != 0 ]; then
     log_error "Please install wget on your system!"
     exit 1
 fi
 
 res=$(which unzip)
-if [ $? != 0 ];
-then
+if [ $? != 0 ]; then
     log_error "Please install unzip on your system!"
     exit 1
 fi
 
 res=$(which curl)
-if [ $? != 0 ];
-then
+if [ $? != 0 ]; then
     log_error "Please install curl on your system!"
     exit 1
 fi
 
 res=$(which jq)
-if [ $? != 0 ];
-then
+if [ $? != 0 ]; then
     log_error "Please install jq on your system!"
     exit 1
 fi
@@ -258,7 +262,7 @@ get_file_id_from_share() {
 
     # POST
     local http_code
-    http_code=$(curl  -s -o "$temp_response" -w "%{http_code}" -X POST "$url" \
+    http_code=$(curl -s -o "$temp_response" -w "%{http_code}" -X POST "$url" \
         -H "${headers[0]}" \
         -H "${headers[1]}" \
         -H "${headers[2]}" \
@@ -277,16 +281,37 @@ get_file_id_from_share() {
     fi
 
     if [ "$http_code" -eq 200 ]; then
-        local file_id=$(echo "$response_body" | jq -r '.items[0].file_id')
-        if [ "$file_id" != "null" ] && [ -n "$file_id" ]; then
-            local file_name=$(echo "$response_body" | jq -r '.items[0].name')
-            log_debug "Found file: $file_name with ID: $file_id"
-            echo "$file_id"
-            return 0
-        else
-            log_error "No files found in the share link"
-            return 1
+        local pick file_id file_name
+        pick=$(echo "$response_body" | jq -c --arg file "${FILE_PAT}" --arg variant "${VARIANT}" '
+            def glob2re:
+              gsub("\\\\"; "\\\\") | gsub("\\."; "\\.") | gsub("\\*"; ".*") | gsub("\\?"; ".");
+            .items
+            | map(select((.type // "file") != "folder"))
+            | if $file != "" then
+                map(select(.name | test($file | glob2re)))
+              elif $variant != "" then
+                (map(select(.name | ascii_downcase | contains($variant | ascii_downcase)))) as $m
+                | if ($m | length) > 0 then $m
+                  elif length == 1 then .
+                  else []
+                  end
+              else . end
+            | sort_by(.name)
+            | if length == 0 then empty else .[-1] end
+        ')
+        if [[ -n "$pick" && "$pick" != "null" ]]; then
+            file_id=$(echo "$pick" | jq -r '.file_id')
+            file_name=$(echo "$pick" | jq -r '.name')
+            if [ "$file_id" != "null" ] && [ -n "$file_id" ]; then
+                log_info "Share file: ${file_name}"
+                log_debug "Found file: $file_name with ID: $file_id"
+                echo "$file_id"
+                return 0
+            fi
         fi
+        log_error "No matching file in share (file=${FILE_PAT:-none} variant=${VARIANT:-none})"
+        echo "$response_body" | jq -r '.items[]? | "  - \(.name)"' >&2 || true
+        return 1
     fi
     log_error "Failed to get file list"
     return 1
@@ -329,7 +354,7 @@ get_download_url() {
         "file_id": $file_id,
         "expire_sec": 7200
     }')
-log_debug "share_token:  $share_token"
+    log_debug "share_token:  $share_token"
 
     local headers=(
         "x-share-token: $share_token"
@@ -409,55 +434,92 @@ download_aliyun_file() {
 
 extract_sysroot() {
     if ! resolve_sysroot_archive; then
-        log_error "未找到压缩包: topsbot_sysroot.tar.gz 或 topsbot_sysroot_*.tar.gz"
+        log_error "archive not found: ${DEFAULT_ARCHIVE}"
         exit 1
     fi
 
-    if sysroot_ready && [[ "${FORCE}" != true ]]; then
-        log_info "topsbot_sysroot 已存在，跳过解压（使用 --force 可重新解压）"
+    if [[ -d "${SYSROOT}/usr/bin" ]] && [[ "${FORCE}" != true ]]; then
+        log_info "${SYSROOT} exists; skipping extraction (use --force to re-extract)"
         return 0
     fi
 
-    if [[ -d "${SYSROOT}" ]]; then
-        if [[ "${FORCE}" != true ]]; then
-            log_error "${SYSROOT} 存在但不完整，请确认后使用 --force 重新解压"
-            exit 1
-        fi
-        log_info "--force：删除已有 ${SYSROOT}"
+    # Only a non-empty incomplete tree needs --force (could be a hand-maintained
+    # dir-only sysroot). An empty dir is safe to extract into — dockerd
+    # auto-creates missing bind-mount sources, leaving exactly that behind.
+    if [[ -d "${SYSROOT}" ]] && [[ -n "$(ls -A "${SYSROOT}" 2>/dev/null)" ]] && [[ "${FORCE}" != true ]]; then
+        log_error "${SYSROOT} exists but is incomplete; verify it, then re-extract with --force"
+        exit 1
+    fi
+    if [[ "${FORCE}" == true ]]; then
+        log_info "--force: removing existing ${SYSROOT}"
         rm -rf "${SYSROOT}"
     fi
 
-    log_info "正在解压 ${ARCHIVE} ..."
-    tar -xzf "${ARCHIVE}" -C "${CC_ROOT}"
+    log_info "extracting ${ARCHIVE} -> ${SYSROOT} ..."
+    # Detect archive layout from the first entry only: old tarballs wrap
+    # content under a single top-level dir, new ones are flattened. tar
+    # stops early via SIGPIPE (head closes the pipe).
+    top="$( (tar tzf "${ARCHIVE}" 2>/dev/null | head -1 | cut -d/ -f1) || true)"
+    mkdir -p "${SYSROOT}"
+    case "${top}" in
+    . | usr | lib | bin | etc | opt | var | root | sbin | home | media | mnt | srv)
+        tar -xzf "${ARCHIVE}" -C "${SYSROOT}"
+        ;;
+    *)
+        tar -xzf "${ARCHIVE}" --strip-components=1 -C "${SYSROOT}"
+        ;;
+    esac
 
-    if ! sysroot_ready; then
-        log_error "解压完成但 sysroot 不完整，请检查压缩包内容"
+    if [[ ! -d "${SYSROOT}/usr/bin" ]] ||
+        { [[ ! -d "${SYSROOT}/opt/tbros" ]] && [[ ! -d "${SYSROOT}/opt/ros" ]]; }; then
+        log_error "extraction finished but the sysroot is incomplete; check the archive contents"
         exit 1
     fi
-
-    log_success "解压完成: ${SYSROOT}"
 }
 
 download_sysroot_archive() {
-    log_info "cc root dir: ${CC_ROOT}"
-    log_info "Starting to download topsbot_sysroot..."
-    TOPSBOT_SYSROOT_FILE_ID=$(get_auto_file_id "$TOPSBOT_SYSROOT_URL" "topsbot_sysroot")
-    download_aliyun_file "$TOPSBOT_SYSROOT_URL" "$TOPSBOT_SYSROOT_FILE_ID" "${DEFAULT_ARCHIVE}" || {
-        log_error "topsbot_sysroot download failed"
+    if [[ -z "${TOPSBOT_SYSROOT_URL}" ]]; then
+        log_error "sysroot.url is empty; set it in the board JSON to download"
         exit 1
-    }
+    fi
+    log_info "cc root dir: ${CC_ROOT}"
+    log_info "Downloading sysroot (variant=${VARIANT:-none}) from ${TOPSBOT_SYSROOT_URL}"
+    mkdir -p "$(dirname "${DEFAULT_ARCHIVE}")"
+    # Aliyun share links carry a /s/<share_id> segment + domainId (both are
+    # required by the share-API flow); anything else is a plain direct URL.
+    if [[ "${TOPSBOT_SYSROOT_URL}" =~ /s/[a-zA-Z0-9]+(\?|$) && "${TOPSBOT_SYSROOT_URL}" =~ domainId= ]]; then
+        TOPSBOT_SYSROOT_FILE_ID=$(get_auto_file_id "$TOPSBOT_SYSROOT_URL" "sysroot")
+        download_aliyun_file "$TOPSBOT_SYSROOT_URL" "$TOPSBOT_SYSROOT_FILE_ID" "${DEFAULT_ARCHIVE}" || {
+            log_error "sysroot download failed"
+            exit 1
+        }
+    else
+        # -f: fail on HTTP errors instead of saving the error page;
+        # -C -: resume a partial download; --retry: transient 5xx/timeouts
+        curl -fL --retry 3 --retry-delay 2 -C - -o "${DEFAULT_ARCHIVE}" "${TOPSBOT_SYSROOT_URL}" || {
+            log_error "sysroot download failed"
+            exit 1
+        }
+    fi
     ARCHIVE="${DEFAULT_ARCHIVE}"
-    log_success "topsbot_sysroot downloaded successfully: ${ARCHIVE}"
+    log_success "sysroot downloaded: ${ARCHIVE}"
 }
 
 ensure_sysroot() {
+    if [[ "${DOWNLOAD_ONLY:-}" == true ]]; then
+        # download-only: decide on the tarball, NOT the extracted dir
+        resolve_sysroot_archive || download_sysroot_archive
+        log_success "download-only: ${ARCHIVE}"
+        return 0
+    fi
+
     if sysroot_ready && [[ "${FORCE}" != true ]]; then
-        log_info "topsbot_sysroot 已就绪，跳过下载和解压"
+        log_info "sysroot ready (${SYSROOT}); skipping download and extraction"
         return 0
     fi
 
     if [[ "${FORCE}" == true ]]; then
-        log_info "--force：删除已有 tgz 和 sysroot"
+        log_info "--force: removing existing tarball and sysroot"
         remove_sysroot_archives
         rm -rf "${SYSROOT}"
     fi
@@ -468,9 +530,12 @@ ensure_sysroot() {
     fi
 
     if resolve_sysroot_archive; then
-        log_info "本地已存在 ${ARCHIVE}，跳过下载"
-    else
+        log_info "local archive exists: ${ARCHIVE}; skipping download"
+    elif [[ -n "${TOPSBOT_SYSROOT_URL}" ]]; then
         download_sysroot_archive
+    else
+        log_error "${SYSROOT} is not ready and sysroot.url is empty"
+        exit 1
     fi
 
     extract_sysroot

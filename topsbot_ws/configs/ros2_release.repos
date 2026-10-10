@@ -1,0 +1,48 @@
+# 对外发布清单：version 就是 GitHub 上的 release tag（release-<上游版本>），
+# 消费方 vcs import 直接引用；同步时由 ci/release-sync-all.sh 从 GitLab 里
+# 推导源 ref（去掉 release-/v 前缀后匹配裸版本 tag）。
+repositories:
+  BerxelSDK_ROS2_riscv64:
+    type: git
+    url: https://github.com/TopsBot/BerxelSDK_ROS2_riscv64.git
+    version: release-2.0.1
+  topsbot_cpu_mediapipe_infer:
+    type: git
+    url: https://github.com/TopsBot/topsbot_cpu_mediapipe_infer.git
+    version: release-0.2.0
+  topsbot_cv:
+    type: git
+    url: https://github.com/TopsBot/topsbot_cv.git
+    version: release-0.2.1
+  topsbot-mobilenetv2:
+    type: git
+    url: https://github.com/TopsBot/topsbot-mobilenetv2.git
+    version: release-0.1.1
+  topsbot_msgs:
+    type: git
+    url: https://github.com/TopsBot/topsbot_msgs.git
+    version: release-0.5.0
+  topsbot_segformer:
+    type: git
+    url: https://github.com/TopsBot/topsbot_segformer.git
+    version: release-0.5.0
+  topsbot_usb_cam:
+    type: git
+    url: https://github.com/TopsBot/topsbot_usb_cam.git
+    version: release-0.4.1
+  topsbot_webviz:
+    type: git
+    url: https://github.com/TopsBot/topsbot_webviz.git
+    version: release-0.4.0
+  topsbot_whisper:
+    type: git
+    url: https://github.com/TopsBot/topsbot_whisper.git
+    version: release-0.5.0
+  topsbot_yolo:
+    type: git
+    url: https://github.com/TopsBot/topsbot_yolo.git
+    version: release-0.5.0
+  topsbot_gesture:
+    type: git
+    url: https://github.com/TopsBot/topsbot_gesture.git
+    version: release-0.1.0
