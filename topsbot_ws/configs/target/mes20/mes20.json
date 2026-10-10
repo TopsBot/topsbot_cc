@@ -5,7 +5,7 @@
   "product": "default",
   "platform": "MES20",
   "description": "TopsBot MES20 platform (riscv64)",
-  "repos": "configs/ros2_internal_publish.repos",
+  "repos": "configs/ros2_release.repos",
   "default_variant": "noble",
   "sysroot": {
     "packages": "package.list"

@@ -1,6 +1,3 @@
-# 对外发布清单：version 就是 GitHub 上的 release tag（release-<上游版本>），
-# 消费方 vcs import 直接引用；同步时由 ci/release-sync-all.sh 从 GitLab 里
-# 推导源 ref（去掉 release-/v 前缀后匹配裸版本 tag）。
 repositories:
   BerxelSDK_ROS2_riscv64:
     type: git
