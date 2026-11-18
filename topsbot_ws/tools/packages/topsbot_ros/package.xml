@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>topsbot_ros</name>
-  <version>0.10.0</version>
+  <version>0.11.0</version>
   <description>TOPSBOT ros meta package (one-click install, excludes topsbot_base)</description>
   <maintainer email="topsbot@topsfuture.com">topsbot</maintainer>
   <license>Apache License 2.0</license>
@@ -19,14 +19,18 @@
   <exec_depend>topsbot_cpu_mediapipe_infer</exec_depend>
   <exec_depend>topsbot_gesture_det</exec_depend>  <!-- topsbot_gesture -->
   <exec_depend>topsbot_whisper_asr</exec_depend>  <!-- topsbot_whisper -->
+  <exec_depend>topsbot_centerpoint</exec_depend>
+  <exec_depend>topsbot_facemesh</exec_depend>
 
   <!-- 中间件 & 三方库 -->
   <exec_depend>tb_cls_msgs</exec_depend>  <!-- topsbot_msgs -->
   <exec_depend>tb_det_msgs</exec_depend>  <!-- topsbot_msgs -->
   <exec_depend>tb_img_msgs</exec_depend>  <!-- topsbot_msgs -->
   <exec_depend>tb_seg_msgs</exec_depend>  <!-- topsbot_msgs -->
+  <exec_depend>tb_ocr_msgs</exec_depend>  <!-- topsbot_msgs -->
   <exec_depend>fastrtps</exec_depend>  <!-- topsbot_fastdds -->
   <exec_depend>topsbot_cv</exec_depend>
+  <exec_depend>topsbot_codec</exec_depend>
   <exec_depend>python3-mediapipe</exec_depend>  <!-- python3-mediapipe-topsbot -->
 
   <!-- 工具 -->

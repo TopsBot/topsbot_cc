@@ -30,7 +30,7 @@
       "image": "topsbot_riscv64_cross_build:noble",
       "remote_image": "harbor.intchains.in:8999/topsbot/topsbot_riscv64_cross_build:noble",
       "sysroot": {
-        "url": "http://owncloud.intchains.in:9000/s/XfrlmFPLwx2oMrc/download"
+        "url": "https://bj25486.apps.aliyunfile.com/disk/s/vNJtjrpQzGn?domainId=bj25486"
       }
     }
   }

@@ -24,16 +24,24 @@ tb_det_msgs:
   ubuntu: [tbros-humble-tb-det-msgs]
 tb_img_msgs:
   ubuntu: [tbros-humble-tb-img-msgs]
+tb_ocr_msgs:
+  ubuntu: [tbros-humble-tb-ocr-msgs]
 tb_seg_msgs:
   ubuntu: [tbros-humble-tb-seg-msgs]
 topsbot_ai_infer:
   ubuntu: [tbros-humble-topsbot-ai-infer]
 topsbot_base:
   ubuntu: [tbros-humble-topsbot-base]
+topsbot_centerpoint:
+  ubuntu: [tbros-humble-topsbot-centerpoint]
+topsbot_codec:
+  ubuntu: [tbros-humble-topsbot-codec]
 topsbot_cpu_mediapipe_infer:
   ubuntu: [tbros-humble-topsbot-cpu-mediapipe-infer]
 topsbot_cv:
   ubuntu: [tbros-humble-topsbot-cv]
+topsbot_facemesh:
+  ubuntu: [tbros-humble-topsbot-facemesh]
 topsbot_gesture_det:
   ubuntu: [tbros-humble-topsbot-gesture-det]
 topsbot_mobilenet_cls:
@@ -64,6 +72,11 @@ libtasys:
   ubuntu: [libtasys]
 libtacv:
   ubuntu: [libtacv]
+# noble builds against taco_sdk OpenCV 4.15; Ubuntu's 4.6 elsewhere.
+libopencv-dev:
+  ubuntu:
+    '*': [libopencv-dev]
+    noble: [libtaopencv-dev]
 libtaruntime:
   ubuntu: [libtaruntime]
 libdec24:

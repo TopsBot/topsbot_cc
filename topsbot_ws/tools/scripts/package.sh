@@ -102,13 +102,21 @@ package_one() {
     local ros_name tb_name
     ros_name="ros-humble-$(echo "${pkg}" | tr '_' '-')"
     tb_name="tbros-humble-$(echo "${pkg}" | tr '_' '-')"
-    sed -i "s|${ros_name}|${tb_name}|g" debian/changelog debian/control debian/rules
+    # Whole package names only ([a-z0-9.+-] per Debian policy): a substring
+    # match also rewrote deps, e.g. tbros-humble-orbbec-camera-msgs became
+    # tbtbros-humble-orbbec-camera-msgs when packaging orbbec_camera.
+    perl -pi -e "s/(?<![a-z0-9.+-])\Q${ros_name}\E(?![a-z0-9.+-])/${tb_name}/g" \
+      debian/changelog debian/control debian/rules
     sed -i "s|/opt/ros/humble|/opt/tbros/humble|g" debian/rules
     # Restore underlay on search paths. CMAKE_* lists are semicolon-separated
     # (cmake), PKG_CONFIG_PATH is colon-separated (unix). Source underlay
     # setup.sh first so PYTHONPATH/ament env exist even before ros-workspace
-    # has produced /opt/tbros/humble/setup.sh.
+    # has produced /opt/tbros/humble/setup.sh. dh_shlibdeps gets the installed
+    # overlay libs explicitly: without tbros-humble-ros-workspace nothing puts
+    # /opt/tbros/humble/lib on LD_LIBRARY_PATH, and e.g. rmw_fastrtps_shared_cpp
+    # failed with "cannot find library libfastrtps.so.2.6".
     sed -i \
+      -e 's|^\(\tdh_shlibdeps -l[^ ]*\)|\1:/opt/tbros/humble/lib|' \
       -e 's|-DAMENT_PREFIX_PATH="/opt/tbros/humble"|-DAMENT_PREFIX_PATH="/opt/tbros/humble;/opt/ros/humble"|g' \
       -e 's|-DCMAKE_PREFIX_PATH="/opt/tbros/humble"|-DCMAKE_PREFIX_PATH="/opt/tbros/humble;/opt/ros/humble"|g' \
       -e 's|export PKG_CONFIG_PATH=/opt/tbros/humble/lib/pkgconfig|export PKG_CONFIG_PATH=/opt/tbros/humble/lib/pkgconfig:/opt/ros/humble/lib/pkgconfig|g' \
